@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Globe, Users, Shield, Rocket, ChevronRight, Menu, X, Play } from 'lucide-react';
 import VRExperience from './components/VRExperience';
 import './App.css';
