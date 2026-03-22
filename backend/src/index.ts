@@ -14,8 +14,13 @@ app.use(express.json());
 // MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/vrworld';
 mongoose.connect(MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB!'))
-  .catch((err) => console.error('Error connecting to MongoDB:', err));
+  .then(() => {
+    console.log('CONNECTED TO MONGODB SUCCESSFULLY!');
+  })
+  .catch((err) => {
+    console.error('SERVER FATAL: Mongoose connection failed:', err);
+    process.exit(1);
+  });
 
 // Schemas
 const UserSchema = new mongoose.Schema({
