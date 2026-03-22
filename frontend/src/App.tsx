@@ -1,9 +1,55 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Globe, Users, Shield, Rocket, ChevronRight, Menu, X, Play } from 'lucide-react';
+import { Globe, Users, Shield, Rocket, ChevronRight, Menu, X, Play, Twitter, Linkedin, Send } from 'lucide-react';
 import VRExperience from './components/VRExperience';
 import './App.css';
+
+const WaitlistForm: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+    // Simulated backend call
+    setTimeout(() => setStatus('success'), 1500);
+  };
+
+  return (
+    <div className="glass p-8 rounded-2xl max-w-xl mx-auto neon-border mt-12 mb-20 relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+      <h3 className="text-2xl font-bold mb-2 text-center">Join the Core Nexus</h3>
+      <p className="text-gray-400 text-center mb-6">Gain early access to exclusive virtual dimensions and a limited-edition explorer badge.</p>
+      
+      {status === 'success' ? (
+        <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="text-center p-4 bg-green-500/20 rounded-lg border border-green-500/50">
+          <p className="text-green-400 font-semibold flex items-center justify-center gap-2">
+            <Send size={18} /> You're on the list, Explorer.
+          </p>
+        </motion.div>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+          <input 
+            type="email" 
+            required
+            placeholder="Enter your email address"
+            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50 transition-all"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <button 
+            type="submit" 
+            disabled={status === 'loading'}
+            className="btn-primary whitespace-nowrap px-8 py-3 flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {status === 'loading' ? 'Processing...' : 'Secure Beta Access'}
+          </button>
+        </form>
+      )}
+    </div>
+  );
+};
 
 const LandingPage: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -55,14 +101,27 @@ const LandingPage: React.FC = () => {
             Step into immersive educational worlds. Break the boundaries of space and time to learn through direct experience.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-             <Link to="/vr" className="btn-primary text-lg flex items-center justify-center gap-2 px-10 py-4">
-               Launch VR <Play fill="white" size={20} />
+             <Link to="/vr" className="btn-primary text-xl flex items-center justify-center gap-2 px-10 py-5 group">
+               Enter Nexus <Play className="group-hover:translate-x-1 transition-transform" fill="white" size={20} />
              </Link>
-             <button className="glass border-white/10 text-white font-semibold px-10 py-4 rounded-lg hover:bg-white/5 transition-colors">
-               View Gallery
+             <button className="glass border-white/10 text-white font-semibold px-10 py-5 rounded-lg hover:bg-white/5 transition-all flex items-center justify-center gap-2">
+               Watch Trailer
              </button>
           </div>
+
+          {/* Social Proof / Sharing */}
+          <div className="mt-12 flex items-center justify-center gap-6 opacity-60 hover:opacity-100 transition-opacity">
+            <span className="text-xs uppercase tracking-[0.3em] font-bold text-gray-500">Spread the Vision:</span>
+            <a href="https://twitter.com/intent/tweet?text=I'm%20about%20to%20explore%20the%20infinite%20with%20@VRWorld." target="_blank" rel="noreferrer" className="text-white hover:text-indigo-400 transition-colors">
+              <Twitter size={20} />
+            </a>
+            <a href="https://linkedin.com/shareArticle?mini=true&url=https://vrworld.nexus" target="_blank" rel="noreferrer" className="text-white hover:text-purple-400 transition-colors">
+              <Linkedin size={20} />
+            </a>
+          </div>
         </motion.div>
+        
+        <WaitlistForm />
       </section>
 
       {/* Features */}
