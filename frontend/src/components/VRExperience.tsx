@@ -44,6 +44,7 @@ const VRExperience: React.FC = () => {
 
         {/* Floating Objects */}
         <a-box 
+          className="clickable"
           position="-2 1.5 -5" 
           rotation="0 45 0" 
           color="#a855f7"
@@ -51,6 +52,7 @@ const VRExperience: React.FC = () => {
         ></a-box>
 
         <a-sphere 
+          className="clickable"
           position="2 1.8 -4" 
           radius="0.75" 
           color="#6366f1"
@@ -58,6 +60,7 @@ const VRExperience: React.FC = () => {
         ></a-sphere>
 
         <a-torus-knot 
+          className="clickable"
           position="0 3 -8" 
           radius="1" 
           radius-tubular="0.2" 
@@ -70,7 +73,14 @@ const VRExperience: React.FC = () => {
         <a-light type="point" intensity="2" position="2 4 4" color="#6366f1"></a-light>
         
         <a-entity camera look-controls position="0 1.6 0">
-           <a-cursor color="#ec4899"></a-cursor>
+           <a-cursor 
+             color="#ec4899"
+             fuse="true"
+             fuse-timeout="1500"
+             raycaster="objects: .clickable"
+             animation__fusing="property: scale; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
+             animation__mouseleave="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 500"
+           ></a-cursor>
         </a-entity>
       </a-scene>
     </div>

@@ -28,6 +28,13 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
+const WaitlistSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  signedUpAt: { type: Date, default: Date.now },
+});
+
+const Waitlist = mongoose.model('Waitlist', WaitlistSchema);
+
 // Basic Routes
 app.get('/', (req, res) => {
   res.send('VRWorld Backend API is running!');
@@ -39,6 +46,21 @@ app.post('/api/register', async (req, res) => {
     const user = new User({ username, email, password });
     await user.save();
     res.status(201).json({ message: 'User registered successfully', user });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/waitlist', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const existing = await Waitlist.findOne({ email });
+    if (existing) {
+      return res.status(200).json({ message: 'Already on the list', exists: true });
+    }
+    const signup = new Waitlist({ email });
+    await signup.save();
+    res.status(201).json({ message: 'Added to waitlist!', exists: false });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }

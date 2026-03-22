@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Globe, Users, Shield, Rocket, ChevronRight, Menu, X, Play, Twitter, Linkedin, Send } from 'lucide-react';
+import axios from 'axios';
 import VRExperience from './components/VRExperience';
 import './App.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'https://vrworld-production.up.railway.app';
 
 const WaitlistForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -12,8 +15,13 @@ const WaitlistForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
-    // Simulated backend call
-    setTimeout(() => setStatus('success'), 1500);
+    try {
+      await axios.post(`${API_URL}/api/waitlist`, { email });
+      setStatus('success');
+    } catch (err) {
+      console.error('Waitlist error:', err);
+      setStatus('error');
+    }
   };
 
   return (
@@ -34,7 +42,7 @@ const WaitlistForm: React.FC = () => {
             type="email" 
             required
             placeholder="Enter your email address"
-            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50 transition-all"
+            className={`flex-1 bg-white/5 border ${status === 'error' ? 'border-red-500' : 'border-white/10'} rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50 transition-all`}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -43,10 +51,11 @@ const WaitlistForm: React.FC = () => {
             disabled={status === 'loading'}
             className="btn-primary whitespace-nowrap px-8 py-3 flex items-center justify-center gap-2 disabled:opacity-50"
           >
-            {status === 'loading' ? 'Processing...' : 'Secure Beta Access'}
+            {status === 'loading' ? 'Signaling...' : 'Secure Beta Access'}
           </button>
         </form>
       )}
+      {status === 'error' && <p className="text-red-400 text-xs mt-2 text-center">Transmission failed. Please try again.</p>}
     </div>
   );
 };
