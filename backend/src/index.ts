@@ -7,30 +7,16 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/vrworld';
 
 app.use(cors());
 app.use(express.json());
-
-// MongoDB connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/vrworld';
-console.log('ENV CHECK: MONGODB_URI found?', !!process.env.MONGODB_URI);
-if (!process.env.MONGODB_URI) {
-  console.warn('WARNING: Running on default local MongoDB URI. Check Railway variables!');
-}
-mongoose.connect(MONGODB_URI)
-  .then(() => {
-    console.log('CONNECTED TO MONGODB SUCCESSFULLY!');
-  })
-  .catch((err) => {
-    console.error('SERVER FATAL: Mongoose connection failed:', err);
-    process.exit(1);
-  });
 
 // Schemas
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }, // Should be hashed in production
+  password: { type: String, required: true },
   profileImage: String,
   joinedAt: { type: Date, default: Date.now },
 });
@@ -47,6 +33,13 @@ const Waitlist = mongoose.model('Waitlist', WaitlistSchema);
 // Basic Routes
 app.get('/', (req, res) => {
   res.send('VRWorld Backend API is running!');
+});
+
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'online', 
+    db: mongoose.connection.readyState === 1 ? 'connected' : 'connecting/failed' 
+  });
 });
 
 app.post('/api/register', async (req, res) => {
@@ -75,6 +68,12 @@ app.post('/api/waitlist', async (req, res) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on port ${PORT} at 0.0.0.0`);
+// START SERVER
+app.listen(Number(PORT), '0.0.0.0', () => {
+  console.log(`📡 VRWorld Nexus Backend signaling on Port ${PORT}...`);
+  
+  // Connect to MongoDB After the server starts to avoid 502 Boot Timeouts
+  mongoose.connect(MONGODB_URI)
+    .then(() => console.log('✅ CONNECTED TO MONGODB'))
+    .catch((err) => console.error('❌ MONGODB ERROR:', err));
 });
