@@ -13,6 +13,10 @@ app.use(express.json());
 
 // MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/vrworld';
+console.log('ENV CHECK: MONGODB_URI found?', !!process.env.MONGODB_URI);
+if (!process.env.MONGODB_URI) {
+  console.warn('WARNING: Running on default local MongoDB URI. Check Railway variables!');
+}
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('CONNECTED TO MONGODB SUCCESSFULLY!');
