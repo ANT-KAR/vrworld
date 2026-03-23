@@ -9,8 +9,19 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/vrworld';
 
-app.use(cors());
+app.use(cors({
+  origin: '*', // Allow all for initial stability, can restrict to Netlify later
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
+
+// Logger for debugging live requests
+app.use((req, res, next) => {
+  console.log(`📡 [${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
 
 // Schemas
 const UserSchema = new mongoose.Schema({
